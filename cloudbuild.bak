@@ -1,0 +1,102 @@
+steps:
+  # Step 1: Set up Node.js and install dependencies
+  # We use a Node.js Docker image to run the commands.
+  - id: 'Install dependencies'
+    name: 'gcr.io/cloud-builders/npm'
+    args: ['ci']
+    dir: 'src'
+
+  # Step 2: Run tests
+  - id: 'Run tests'
+    name: 'gcr.io/cloud-builders/npm'
+    args: ['test', '--', '--coverage'] # Add coverage to collect test results
+
+  #Execute SAST Scan using SonarCloud in GCP DevSecOps Pipeline
+  - id: SAST Scan using SonarCloud in GCP DevSecOps Pipeline  
+    name: maven:3-openjdk-18-slim
+    entrypoint: mvn
+    args: ['verify', 'sonar:sonar','-Dsonar.host.url=https://sonarcloud.io','-Dsonar.organization=gcp','-Dsonar.projectKey=projectkey','-Dsonar.token=${_SONAR_TOKEN}']
+
+  - id: Build the Image
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        docker build -t $LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG -f ./Dockerfile . &&
+        docker image inspect $LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG
+        
+  - id: Trivy Vulnerability Scan
+    name: 'aquasec/trivy'
+    args:
+      - 'image'
+      - '--format=table'
+      - '--exit-code=1'
+      - '--ignore-unfixed'
+      - '--vuln-type=os,library'
+      - '--severity=CRITICAL,HIGH'
+      - '$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG
+
+  - id: Push Image to Artifact Registry
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        docker push $LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG
+        
+  - id: Capture Image Digest Information
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        gcloud container images describe $LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG \
+        --format='get(image_summary.digest)' > /workspace/digest.txt
+        
+  - id: Change permissions on create_binauthz_policy.sh
+    name: bash
+    args: ['chmod', '+x', 'scripts/create_binauthz_policy.sh']
+    
+  - id: Apply Binary Authorization Custom Policy for Image
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: '/bin/sh'
+    args:
+      - -c
+      - |
+        ./scripts/create_binauthz_policy.sh
+        
+  - id: Create a cloud deploy release and this will also deploy the release to the first target ie test
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        gcloud deploy releases create r-$REVISION_ID --project=$PROJECT_ID --region=$LOCATION --delivery-pipeline=ci-cd-test --images=my-app-image=$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd@$(cat /workspace/digest.txt)
+
+  #Run DAST scan using OWASP ZAP in GCP DevSecOps Pipeline
+  - id: DAST Scan using OWASP ZAP in GCP DevSecOps Pipeline
+    name: 'ubuntu'
+    entrypoint: bash
+    args: 
+      - '-c'
+      - |-
+        apt-get update
+        apt-get -y install wget
+        apt-get -y install default-jdk
+        wget https://github.com/zaproxy/zaproxy/releases/download/v2.16.0/ZAP_2.16.0_Linux.tar.gz
+        tar -xvf ZAP_2.16.0_Linux.tar.gz
+        cd ZAP_2.16.0
+        ./zap.sh -cmd -quickurl http://infotechnologies.org -quickprogress -quickout ../zap_report.html 
+
+  - id: Promote/deploy cloud deploy release to next stage ie staging
+    name: gcr.io/cloud-builders/gcloud
+    args: ['deploy', 'releases', 'promote', '--release=r-$REVISION_ID','--project=$PROJECT_ID','--region=$LOCATION','--delivery-pipeline=ci-cd-test', '--to-target=staging']
+    
+  - id: Promote/deploy cloud deploy release to next stage ie prod
+    name: gcr.io/cloud-builders/gcloud
+    args: ['deploy', 'releases', 'promote', '--release=r-$REVISION_ID','--project=$PROJECT_ID','--region=$LOCATION','--delivery-pipeline=ci-cd-test', '--to-target=prod']
+images: ['$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG']
+
+options:
+  logging: CLOUD_LOGGING_ONLY

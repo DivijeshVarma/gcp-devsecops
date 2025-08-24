@@ -1,0 +1,9 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: gke-application
+manifests:
+  rawYaml:
+  - app1.yaml
+deploy:
+  kubectl: {}
