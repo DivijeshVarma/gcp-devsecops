@@ -1,5 +1,5 @@
 steps:
-  # Step 1: Install dependencies and run unit tests
+  # Step 1: Install dependencies and run unit testss
   # These commands run from within the 'src' directory where package.json is located.
   - id: 'Install dependencies'
     name: 'node:20'
