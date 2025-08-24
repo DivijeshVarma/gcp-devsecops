@@ -17,14 +17,13 @@ steps:
   - id: 'SAST Scan'
     name: 'sonarsource/sonar-scanner-cli:latest'
     entrypoint: 'sh'
-    dir: 'src'
     args:
       - '-c'
       - |
-        mkdir -p /workspace/tmp-dir
-        cp -r src/* /workspace/tmp-dir/
-        cp src/sonar-project.properties /workspace/tmp-dir/
-        cd /workspace/tmp-dir 
+        mkdir -p /tmp/code
+        cp -r src/* /tmp/code/
+        cp src/sonar-project.properties /tmp/code/
+        cd /tmp/code 
         sonar-scanner -Dsonar.login=$_SONAR_TOKEN
 
   # Step 3: Build the Docker Image
