@@ -15,7 +15,7 @@ steps:
 
   # Step 2: SAST Scan using SonarCloud
   # Assuming the code to scan is at the root of the project. If not, adjust `dir`.
-  - id: 'SAST Scan'
+  - id: SAST Scan Sonar Cloud
     name: 'sonarsource/sonar-scanner-cli:latest'
     entrypoint: 'sh'
     args:
@@ -29,7 +29,7 @@ steps:
 
   # Step 3: Build the Docker Image
   # The Dockerfile is at the project root, but the build context is 'src'.
-  - id: 'Build the Image'
+  - id: Build Docker Image
     name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -38,7 +38,7 @@ steps:
       - '.'
   
   # Step 4: Trivy Vulnerability Scan
-  - id: 'Trivy Vulnerability Scan'
+  - id: Trivy Vulnerability Scan
     name: 'aquasec/trivy'
     args:
       - 'image'
@@ -50,7 +50,7 @@ steps:
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG'
 
   # Step 5: Push Image to Artifact Registry
-  - id: 'Push Image'
+  - id: Push Image to Artifact Registry
     name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
@@ -65,7 +65,7 @@ steps:
         gcloud container images describe $LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG \
         --format='get(image_summary.digest)' > /workspace/digest.txt
 
-  - id: Create a cloud deploy release and this will also deploy the release to the first target ie test
+  - id: Create a cloud deploy release to the first target ie test
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: /bin/bash
     args:
@@ -73,8 +73,8 @@ steps:
       - |
         gcloud deploy releases create r-$REVISION_ID --project=$PROJECT_ID --region=$LOCATION --delivery-pipeline=ci-cd-test --images=my-app-image=$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd@$(cat /workspace/digest.txt)
 
-  #Run DAST scan using OWASP ZAP in GCP DevSecOps Pipeline
-  - id: DAST Scan using OWASP ZAP in GCP DevSecOps Pipeline
+  #Run DAST scan using OWASP ZAP
+  - id: DAST Scan OWASP ZAP
     name: 'ubuntu'
     entrypoint: bash
     args: 
@@ -88,15 +88,13 @@ steps:
         cd ZAP_2.16.0
         ./zap.sh -cmd -quickurl http://infotechnologies.org -quickprogress -quickout ../zap_report.html 
 
-
-
   - id: Promote/deploy cloud deploy release to next stage ie staging
     name: gcr.io/cloud-builders/gcloud
     args: ['deploy', 'releases', 'promote', '--release=r-$REVISION_ID','--project=$PROJECT_ID','--region=$LOCATION','--delivery-pipeline=ci-cd-test', '--to-target=staging']
 
   - id: Promote/deploy cloud deploy release to next stage ie prod
     name: gcr.io/cloud-builders/gcloud
-    args: ['deploy', 'releases', 'promote', '--release=r-$REVISION_ID','--project=$PROJECT_ID','--region=$LOCATION','--delivery-pipeline=ci-cd-test']
+    args: ['deploy', 'releases', 'promote', '--release=r-$REVISION_ID','--project=$PROJECT_ID','--region=$LOCATION','--delivery-pipeline=ci-cd-test', '--to-target=prod']
 images: ['$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG']
 
 options:

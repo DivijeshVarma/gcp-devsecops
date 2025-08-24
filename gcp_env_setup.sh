@@ -56,6 +56,10 @@ gcloud artifacts repositories create test-repo \
 BUCKET_NAME="bucket-$(date +%s)"
 gcloud storage buckets create "gs://$BUCKET_NAME" --location=$LOCATION
 
+# make bucket public
+
+gsutil iam ch allUsers:objectViewer gs://$BUCKET_NAME 
+
 #This plugin is required for your kubectl command-line tool to authenticate with the GKE clusters.
 gcloud components install gke-gcloud-auth-plugin
 
