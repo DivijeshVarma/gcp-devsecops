@@ -2,10 +2,6 @@ apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: gke-application
-build:
-  artifacts:
-    - image: my-app-image
-
 manifests:
   rawYaml:
   - app1.yaml
