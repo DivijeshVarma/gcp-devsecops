@@ -33,8 +33,6 @@ gcloud iam roles create cicdblogrole --project=${PROJECT_ID} \
 #Add the newly created custom role, and "Cloud Deploy Admin" to the Cloud Build Service Account
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${CLOUD_BUILD_SA_EMAIL}" --role="projects/${PROJECT_ID}/roles/cicdblogrole"
 
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${CLOUD_BUILD_SA_EMAIL}" --role='roles/secretmanager.admin'
-
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${CLOUD_BUILD_SA_EMAIL}" --role='roles/clouddeploy.admin'
 
 #Add the following: "Artifact Registry Reader", "Cloud Deploy Runner" and "Kubernetes Engine Admin" IAM Role to the Compute Engine Service Account
