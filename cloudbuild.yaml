@@ -34,9 +34,7 @@ steps:
       - 'build'
       - '-t'
       - '$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd:$_VERSION_TAG'
-      - '-f'
-      - 'Dockerfile'
-      - 'src' # Use 'src' as the build context
+      - '.'
   
   # Step 4: Trivy Vulnerability Scan
   - id: 'Trivy Vulnerability Scan'
