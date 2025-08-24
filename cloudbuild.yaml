@@ -17,6 +17,7 @@ steps:
   - id: 'SAST Scan'
     name: 'sonarsource/sonar-scanner-cli:latest'
     entrypoint: 'sh'
+    dir: 'src'
     args:
       - '-c'
       - |
