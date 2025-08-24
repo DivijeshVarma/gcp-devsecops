@@ -65,8 +65,7 @@ gcloud components install gke-gcloud-auth-plugin
 # Create secrets for sonar token
 gcloud secrets create sonar-token --replication-policy="automatic" --data-file=sonar-token.txt
 
-#Create three GKE clusters for test, staging and production. The Node.js docker image will be deployed as a release through the Cloud Deploy pipeline first in "dev". Next, the image deployment will be rolled to the "staging" cluster and once its successful, pending approval, the final image roll-out will deploy to the "prod" cluster.
-#NOTE: If you're using a different VPC, ensure you change the --subnetwork config value to match against your VPC subnet
+#Create three GKE clusters for test, staging and production.
 
 #GKE Cluster for Test environment, uncomment --subnetwork if you want to use a non-default VPC
 gcloud container clusters create test \
@@ -127,6 +126,6 @@ echo "====================="
 echo "The static IP address created is: $STATIC_IP"
 
 # Display Bucket Name
-echo "$BUCKET_NAME"
+echo "Bucket Name: $BUCKET_NAME"
 
 echo "====================="
