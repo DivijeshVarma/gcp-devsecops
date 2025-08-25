@@ -17,9 +17,10 @@ apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
  name: test
-description: development cluster
+description: test cluster
+requireApproval: true
 gke:
- cluster: projects/secopps/locations/asia-south1/clusters/test
+ cluster: projects/applicationn/locations/asia-south1/clusters/test
 ---
 
 
@@ -30,7 +31,7 @@ metadata:
 description: staging cluster
 requireApproval: true
 gke:
- cluster: projects/secopps/locations/asia-south1/clusters/staging
+ cluster: projects/applicationn/locations/asia-south1/clusters/staging
 ---
 
 apiVersion: deploy.cloud.google.com/v1
@@ -40,4 +41,4 @@ metadata:
 description: production cluster
 requireApproval: true
 gke:
- cluster: projects/secopps/locations/asia-south1/clusters/prod
+ cluster: projects/applicationn/locations/asia-south1/clusters/prod

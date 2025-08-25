@@ -44,27 +44,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: "test.infotechnologies.org" # Replace with your own domain
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: tic-tac-toe
-            port:
-              number: 80
-  - host: "staging.infotechnologies.org" # Replace with your own domain
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: tic-tac-toe
-            port:
-              number: 80
-  - host: "prod.infotechnologies.org" # Replace with your own domain
+  - host: "infotechnologies.org" # Replace with your own domain
     http:
       paths:
       - path: /

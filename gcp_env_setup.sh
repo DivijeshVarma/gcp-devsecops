@@ -18,8 +18,8 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=secopps
-PROJECT_NUMBER=804575539633
+PROJECT_ID=applicationn
+PROJECT_NUMBER=314412745884
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
@@ -74,7 +74,11 @@ gcloud container clusters create test \
     --subnetwork=default \
     --disk-size=20
 
-STATIC_IP=$(gcloud compute addresses create ingress-ip --region=$LOCATION --project=$PROJECT_ID --format='value(address)')
+TEST_IP=$(gcloud compute addresses create test-ip --region=$LOCATION --project=$PROJECT_ID --format='value(address)')
+
+STAGING_IP=$(gcloud compute addresses create staging-ip --region=$LOCATION --project=$PROJECT_ID --format='value(address)')
+
+PROD_IP=$(gcloud compute addresses create prod-ip --region=$LOCATION --project=$PROJECT_ID --format='value(address)')
 
 #GKE Cluster for Staging environment
 gcloud container clusters create staging \
@@ -104,22 +108,26 @@ gcloud deploy apply --file clouddeploy.yaml --region=$LOCATION --project=$PROJEC
 # Install NGINX Ingress Controller on the 'test' cluster
 gcloud container clusters get-credentials test --region $LOCATION --project $PROJECT_ID
 
-helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$STATIC_IP
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$TEST_IP
 
 # Install NGINX Ingress Controller on the 'staging' cluster
 gcloud container clusters get-credentials staging --region $LOCATION --project $PROJECT_ID
 
-helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$STAGING_IP
 
 # Install NGINX Ingress Controller on the 'prod' cluster
 gcloud container clusters get-credentials prod --region $LOCATION --project $PROJECT_ID
 
-helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$PROD_IP
 
 echo "====================="
 
 # Display the static IP address on the screen
-echo "The static IP address created is: $STATIC_IP"
+echo "The Test IP address created is: $TEST_IP"
+
+echo "The Staging IP address created is: $STAGING_IP"
+
+echo "The Prod IP address created is: $PROD_IP"
 
 # Display Bucket Name
 echo "Bucket Name: $BUCKET_NAME"
