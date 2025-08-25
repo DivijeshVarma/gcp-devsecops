@@ -18,8 +18,8 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=devsecops12
-PROJECT_NUMBER=429087103686
+PROJECT_ID=secopps
+PROJECT_NUMBER=804575539633
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
@@ -60,10 +60,6 @@ gsutil iam ch allUsers:objectViewer gs://$BUCKET_NAME
 
 #This plugin is required for your kubectl command-line tool to authenticate with the GKE clusters.
 gcloud components install gke-gcloud-auth-plugin
-
-
-# Create secrets for sonar token
-gcloud secrets create sonar-token --replication-policy="automatic" --data-file=sonar-token.txt
 
 #Create three GKE clusters for test, staging and production.
 
