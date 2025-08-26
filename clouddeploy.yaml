@@ -18,7 +18,6 @@ kind: Target
 metadata:
  name: test
 description: test cluster
-requireApproval: true
 gke:
  cluster: projects/applicationv/locations/asia-south1/clusters/test
 ---
