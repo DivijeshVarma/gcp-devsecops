@@ -73,34 +73,6 @@ steps:
       - |
         gcloud deploy releases create r-$REVISION_ID --project=$PROJECT_ID --region=$LOCATION --delivery-pipeline=ci-cd-test --images=my-app-image=$LOCATION-docker.pkg.dev/$PROJECT_ID/$_CONTAINER_REPO_NAME/cd@$(cat /workspace/digest.txt)
 
-  - id: Wait for rollout approval
-    name: 'gcr.io/cloud-builders/gcloud'
-    waitFor: ['Create a cloud deploy release to the first target ie test']
-    entrypoint: /bin/bash
-    args:
-      - -c
-      - |
-        # Wait for the rollout to be created and get its ID
-        ROLLOUT_ID=$(gcloud deploy rollouts list --release=r-$REVISION_ID --delivery-pipeline=ci-cd-test --region=$LOCATION --format="value(name)" --filter="targetId:test" --limit=1)
-
-        # Loop to check the rollout status
-        while : ; do
-          STATUS=$(gcloud deploy rollouts describe $ROLLOUT_ID --release=r-$REVISION_ID --delivery-pipeline=ci-cd-test --region=$LOCATION --format="value(state)")
-          
-          echo "Current rollout status: $STATUS"
-
-          if [[ "$STATUS" == "SUCCEEDED" ]]; then
-            echo "Rollout succeeded. Continuing pipeline."
-            break
-          elif [[ "$STATUS" == "FAILED" || "$STATUS" == "APPROVAL_REJECTED" || "$STATUS" == "CANCELLED" ]]; then
-            echo "Rollout failed or was rejected. Terminating pipeline."
-            exit 1
-          fi
-          
-          echo "Rollout still pending approval or in progress. Waiting for 30 seconds..."
-          sleep 30
-        done
-
   #Run DAST scan using OWASP ZAP
   - id: DAST Scan OWASP ZAP
     name: 'ubuntu'
