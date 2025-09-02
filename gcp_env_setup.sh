@@ -19,6 +19,7 @@ gcloud services enable secretmanager.googleapis.com
 #GCP Project Variables
 LOCATION=asia-south1
 PROJECT_ID=applicationv
+BUCKET_NAME="bucket-$(date +%s)"
 PROJECT_NUMBER=927741627394
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
@@ -51,7 +52,6 @@ gcloud artifacts repositories create test-repo \
 
 # Create Bucket for DAST scan
 
-BUCKET_NAME="bucket-$(date +%s)"
 gcloud storage buckets create "gs://$BUCKET_NAME" --location=$LOCATION
 
 # make bucket public
@@ -69,7 +69,6 @@ gcloud container clusters create test \
     --machine-type=e2-medium \
     --region $LOCATION \
     --num-nodes=1 \
-    --binauthz-evaluation-mode=PROJECT_SINGLETON_POLICY_ENFORCE \
     --labels=app=vulnapp-test \
     --subnetwork=default \
     --disk-size=20
@@ -86,7 +85,6 @@ gcloud container clusters create staging \
     --machine-type=e2-medium \
     --region $LOCATION \
     --num-nodes=1 \
-    --binauthz-evaluation-mode=PROJECT_SINGLETON_POLICY_ENFORCE \
     --labels=app=vulnapp-staging \
     --subnetwork=default \
     --disk-size=20
@@ -97,7 +95,6 @@ gcloud container clusters create prod \
     --machine-type=e2-medium \
     --region $LOCATION \
     --num-nodes=1 \
-    --binauthz-evaluation-mode=PROJECT_SINGLETON_POLICY_ENFORCE \
     --labels=app=vulnapp-prod \
     --subnetwork=default \
     --disk-size=20
