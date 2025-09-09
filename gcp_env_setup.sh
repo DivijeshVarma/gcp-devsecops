@@ -18,9 +18,9 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=applicationv
+PROJECT_ID=cicdqwerty
 BUCKET_NAME="bucket-$(date +%s)"
-PROJECT_NUMBER=927741627394
+PROJECT_NUMBER=407051042736
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
