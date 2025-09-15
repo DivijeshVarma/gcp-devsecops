@@ -121,6 +121,6 @@ artifacts:
       - zap_report.html
 
 substitutions:
-  _BUCKET_NAME: bucket-1757392728
+  _BUCKET_NAME: bucket-1757905924
   _CONTAINER_REPO_NAME: test-repo     # or whatever your repo is called
   _VERSION_TAG: $TAG_NAME             # or $SHORT_SHA or v1.0.0
