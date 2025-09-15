@@ -18,9 +18,9 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=centered-radio
+PROJECT_ID=oceanics
 BUCKET_NAME="bucket-$(date +%s)"
-PROJECT_NUMBER=556908720365
+PROJECT_NUMBER=100401289283
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
@@ -68,7 +68,6 @@ gcloud container clusters create test \
     --project=$PROJECT_ID \
     --machine-type=e2-medium \
     --region $LOCATION \
-    --num-nodes=1 \
     --labels=app=vulnapp-test \
     --subnetwork=default \
     --disk-size=20
@@ -84,7 +83,6 @@ gcloud container clusters create staging \
     --project=$PROJECT_ID \
     --machine-type=e2-medium \
     --region $LOCATION \
-    --num-nodes=1 \
     --labels=app=vulnapp-staging \
     --subnetwork=default \
     --disk-size=20
@@ -94,7 +92,6 @@ gcloud container clusters create prod \
     --project=$PROJECT_ID \
     --machine-type=e2-medium \
     --region $LOCATION \
-    --num-nodes=1 \
     --labels=app=vulnapp-prod \
     --subnetwork=default \
     --disk-size=20
