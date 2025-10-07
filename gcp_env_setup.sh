@@ -66,14 +66,14 @@ gcloud components install gke-gcloud-auth-plugin
 #GKE Cluster for Test environment, uncomment --subnetwork if you want to use a non-default VPC
 gcloud container clusters create test \
     --project=$PROJECT_ID \
-    --region=$LOCATION \
+    --zone=asia-south1-a \
     --enable-ip-alias \
-    --machine-type=e2-medium \
+    --machine-type=e2-small \
     --disk-size=20 \
     --num-nodes=1 \
     --enable-autoscaling \
-    --total-min-nodes=1 \
-    --total-max-nodes=5 \
+    --min-nodes=1 \
+    --max-nodes=3 \
     --autoscaling-profile=optimize-utilization \
     --enable-vertical-pod-autoscaling \
     --release-channel=regular \
@@ -90,14 +90,14 @@ PROD_IP=$(gcloud compute addresses create prod-ip --region=$LOCATION --project=$
 #GKE Cluster for Staging environment
 gcloud container clusters create staging \
     --project=$PROJECT_ID \
-    --region=$LOCATION \
+    --zone=asia-south1-a \
     --enable-ip-alias \
-    --machine-type=e2-medium \
+    --machine-type=e2-small \
     --disk-size=20 \
     --num-nodes=1 \
     --enable-autoscaling \
-    --total-min-nodes=1 \
-    --total-max-nodes=5 \
+    --min-nodes=1 \
+    --max-nodes=3 \
     --autoscaling-profile=optimize-utilization \
     --enable-vertical-pod-autoscaling \
     --release-channel=regular \
@@ -108,14 +108,14 @@ gcloud container clusters create staging \
 #GKE Cluster for Production environment
 gcloud container clusters create prod \
     --project=$PROJECT_ID \
-    --region=$LOCATION \
+    --zone=asia-south1-a \
     --enable-ip-alias \
-    --machine-type=e2-medium \
+    --machine-type=e2-small \
     --disk-size=20 \
     --num-nodes=1 \
     --enable-autoscaling \
-    --total-min-nodes=1 \
-    --total-max-nodes=5 \
+    --min-nodes=1 \
+    --max-nodes=3 \
     --autoscaling-profile=optimize-utilization \
     --enable-vertical-pod-autoscaling \
     --release-channel=regular \
