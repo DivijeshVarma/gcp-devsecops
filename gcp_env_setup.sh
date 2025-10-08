@@ -18,9 +18,9 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=fit-sanctum
+PROJECT_ID=powerful-rhinos
 BUCKET_NAME="bucket-$(date +%s)"
-PROJECT_NUMBER=956631446301
+PROJECT_NUMBER=211491117503
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
@@ -127,17 +127,17 @@ gcloud container clusters create prod \
 gcloud deploy apply --file clouddeploy.yaml --region=$LOCATION --project=$PROJECT_ID
 
 # Install NGINX Ingress Controller on the 'test' cluster
-gcloud container clusters get-credentials test --region $LOCATION --project $PROJECT_ID
+gcloud container clusters get-credentials test --zone asia-south1-a --project $PROJECT_ID
 
 helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$TEST_IP
 
 # Install NGINX Ingress Controller on the 'staging' cluster
-gcloud container clusters get-credentials staging --region $LOCATION --project $PROJECT_ID
+gcloud container clusters get-credentials staging --zone asia-south1-a --project $PROJECT_ID
 
 helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$STAGING_IP
 
 # Install NGINX Ingress Controller on the 'prod' cluster
-gcloud container clusters get-credentials prod --region $LOCATION --project $PROJECT_ID
+gcloud container clusters get-credentials prod --zone asia-south1-a --project $PROJECT_ID
 
 helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$PROD_IP
 
