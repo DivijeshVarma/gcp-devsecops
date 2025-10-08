@@ -18,9 +18,9 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=powerful-rhinos
+PROJECT_ID=arched-photon
 BUCKET_NAME="bucket-$(date +%s)"
-PROJECT_NUMBER=211491117503
+PROJECT_NUMBER=810649059899
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
@@ -66,14 +66,14 @@ gcloud components install gke-gcloud-auth-plugin
 #GKE Cluster for Test environment, uncomment --subnetwork if you want to use a non-default VPC
 gcloud container clusters create test \
     --project=$PROJECT_ID \
-    --zone=asia-south1-a \
+    --region=$LOCATION \
     --enable-ip-alias \
     --machine-type=e2-small \
     --disk-size=20 \
     --num-nodes=1 \
     --enable-autoscaling \
     --min-nodes=1 \
-    --max-nodes=3 \
+    --max-nodes=5 \
     --autoscaling-profile=optimize-utilization \
     --enable-vertical-pod-autoscaling \
     --release-channel=regular \
@@ -90,14 +90,14 @@ PROD_IP=$(gcloud compute addresses create prod-ip --region=$LOCATION --project=$
 #GKE Cluster for Staging environment
 gcloud container clusters create staging \
     --project=$PROJECT_ID \
-    --zone=asia-south1-a \
+    --region=$LOCATION \
     --enable-ip-alias \
     --machine-type=e2-small \
     --disk-size=20 \
     --num-nodes=1 \
     --enable-autoscaling \
     --min-nodes=1 \
-    --max-nodes=3 \
+    --max-nodes=5 \
     --autoscaling-profile=optimize-utilization \
     --enable-vertical-pod-autoscaling \
     --release-channel=regular \
@@ -108,14 +108,14 @@ gcloud container clusters create staging \
 #GKE Cluster for Production environment
 gcloud container clusters create prod \
     --project=$PROJECT_ID \
-    --zone=asia-south1-a \
+    --region=$LOCATION \
     --enable-ip-alias \
     --machine-type=e2-small \
     --disk-size=20 \
     --num-nodes=1 \
     --enable-autoscaling \
     --min-nodes=1 \
-    --max-nodes=3 \
+    --max-nodes=5 \
     --autoscaling-profile=optimize-utilization \
     --enable-vertical-pod-autoscaling \
     --release-channel=regular \
@@ -127,17 +127,17 @@ gcloud container clusters create prod \
 gcloud deploy apply --file clouddeploy.yaml --region=$LOCATION --project=$PROJECT_ID
 
 # Install NGINX Ingress Controller on the 'test' cluster
-gcloud container clusters get-credentials test --zone asia-south1-a --project $PROJECT_ID
+gcloud container clusters get-credentials test --zone $LOCATION --project $PROJECT_ID
 
 helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$TEST_IP
 
 # Install NGINX Ingress Controller on the 'staging' cluster
-gcloud container clusters get-credentials staging --zone asia-south1-a --project $PROJECT_ID
+gcloud container clusters get-credentials staging --zone $LOCATION --project $PROJECT_ID
 
 helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$STAGING_IP
 
 # Install NGINX Ingress Controller on the 'prod' cluster
-gcloud container clusters get-credentials prod --zone asia-south1-a --project $PROJECT_ID
+gcloud container clusters get-credentials prod --zone $LOCATION --project $PROJECT_ID
 
 helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.loadBalancerIP=$PROD_IP
 
