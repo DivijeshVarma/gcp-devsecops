@@ -19,7 +19,7 @@ metadata:
  name: test
 description: test cluster
 gke:
- cluster: projects/arched-photon/locations/asia-south1/clusters/test
+ cluster: projects/valid-weaver/locations/asia-south1/clusters/test
 ---
 
 
@@ -30,7 +30,7 @@ metadata:
 description: staging cluster
 requireApproval: true
 gke:
- cluster: projects/arched-photon/locations/asia-south1/clusters/staging
+ cluster: projects/valid-weaver/locations/asia-south1/clusters/staging
 ---
 
 apiVersion: deploy.cloud.google.com/v1
@@ -40,4 +40,4 @@ metadata:
 description: production cluster
 requireApproval: true
 gke:
- cluster: projects/arched-photon/locations/asia-south1/clusters/prod
+ cluster: projects/valid-weaver/locations/asia-south1/clusters/prod

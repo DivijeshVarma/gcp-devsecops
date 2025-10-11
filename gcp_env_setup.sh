@@ -18,9 +18,9 @@ gcloud services enable secretmanager.googleapis.com
 
 #GCP Project Variables
 LOCATION=asia-south1
-PROJECT_ID=arched-photon
+PROJECT_ID=valid-weaver
 BUCKET_NAME="bucket-$(date +%s)"
-PROJECT_NUMBER=810649059899
+PROJECT_NUMBER=355881298565
 CLOUD_BUILD_SA_EMAIL="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
